@@ -1,6 +1,5 @@
 import os
 import shutil
-import re
 
 # SETTINGS
 inputFolder = "source"
@@ -38,31 +37,18 @@ def removeHtmlComments(html):
     result = ""
     insideComment = False
     i = 0
-
-    # Replace all strings with placeholders
-    placeholders = []
-    string_pattern = r'"(?:\\.|[^"\\])*"'
-    multiline_string_pattern = r'`[^`]*`'
-    html = re.sub(string_pattern, lambda x: placeholders.append(x.group()) or f"__STRING_PLACEHOLDER_{len(placeholders) - 1}__", html)
-    html = re.sub(multiline_string_pattern, lambda x: placeholders.append(x.group()) or f"__MULTILINE_STRING_PLACEHOLDER_{len(placeholders) - 1}__", html)
-
     while i < len(html):
         if html[i:i+4] == "<!--":
             insideComment = True
             i += 4
-            while i < len(html) and html[i:i+3] != "-->":
-                i += 1
-            if i < len(html):
-                i += 3
-        else:
+        elif html[i:i+3] == "-->":
+            insideComment = False
+            i += 3
+        elif not insideComment:
             result += html[i]
             i += 1
-
-    # Restore the original strings
-    for index, placeholder in enumerate(placeholders):
-        result = result.replace(f"__STRING_PLACEHOLDER_{index}__", placeholder)
-        result = result.replace(f"__MULTILINE_STRING_PLACEHOLDER_{index}__", placeholder)
-
+        else:
+            i += 1
     return result
 
 totalInputBytes, totalOutputBytes = minifyHtml(inputFolder, outputFolder)
