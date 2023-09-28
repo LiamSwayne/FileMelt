@@ -10,7 +10,7 @@ Roadmap:
     - [x] Remove type="text/css".
     - [x] Remove spaces and newlines.
     - [ ] Remove unused classes.
-- [ ] Minify hex codes.
+- [x] Minify hex codes.
 - [ ] Setting for removing console.log statements
 - [ ] Rename js variables.
 - [ ] Basic svg minification.
