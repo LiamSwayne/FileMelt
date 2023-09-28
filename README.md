@@ -7,9 +7,11 @@ Roadmap:
 - [x] Basic HTML minification.
 - [x] Remove html comments.
 - [ ] Minify style tag.
-    - [ ] Remove type="text/css".
+    - [x] Remove type="text/css".
     - [x] Remove spaces and newlines.
+    - [ ] Remove unused classes.
 - [ ] Minify hex codes.
+- [ ] Setting for removing console.log statements
 - [ ] Rename js variables.
 - [ ] Basic svg minification.
 - [ ] Replace dependencies with built-in functions.

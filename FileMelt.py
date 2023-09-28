@@ -1,13 +1,15 @@
 import os
 import shutil
 import re
-from htmlmin import minify as html_minify
+from htmlmin import minify
 from jsmin import jsmin
 from csscompressor import compress
 
 ### SETTINGS
 inputFolder = "source"
 outputFolder = "docs"
+removeHtmlComments = True # Remove HTML comments
+removeConsoleLog = True # Remove console log statements.
 
 ### Methods
 
@@ -22,18 +24,15 @@ def minifyHtml(inputFile, outputFile):
         htmlContent = re.sub(string_pattern, lambda x: placeholders.append(x.group()) or f"__STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
         htmlContent = re.sub(multiline_string_pattern, lambda x: placeholders.append(x.group()) or f"__MULTILINE_STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
 
-        # Remove type="text/css" from style tag
-        # TODO
-
         # Minify style tag
         htmlContent = minify_style_tag(htmlContent)
 
-
         # Remove HTML comments
-        htmlContent = re.sub(r'<!--(.*?)-->', '', htmlContent)
+        if removeHtmlComments:
+            htmlContent = re.sub(r'<!--(.*?)-->', '', htmlContent)
 
         # Minify HTML content
-        minifiedHtml = html_minify(htmlContent, remove_empty_space=True)
+        minifiedHtml = minify(htmlContent, remove_empty_space=True)
 
         # Minify JavaScript within <script> tags
         minifiedHtml = re.sub(r'<script[^>]*>([\s\S]*?)<\/script>', lambda x: '<script>' + jsmin(x.group(1)) + '</script>', minifiedHtml)
