@@ -3,6 +3,7 @@ import shutil
 import re
 from htmlmin import minify as html_minify
 from jsmin import jsmin
+from csscompressor import compress
 
 ### SETTINGS
 inputFolder = "source"
@@ -21,8 +22,15 @@ def minifyHtml(inputFile, outputFile):
         htmlContent = re.sub(string_pattern, lambda x: placeholders.append(x.group()) or f"__STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
         htmlContent = re.sub(multiline_string_pattern, lambda x: placeholders.append(x.group()) or f"__MULTILINE_STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
 
+        # Remove type="text/css" from style tag
+        # TODO
+
+        # Minify style tag
+        htmlContent = minify_style_tag(htmlContent)
+
+
         # Remove HTML comments
-        htmlContent = removeHtmlComments(htmlContent)
+        htmlContent = re.sub(r'<!--(.*?)-->', '', htmlContent)
 
         # Minify HTML content
         minifiedHtml = html_minify(htmlContent, remove_empty_space=True)
@@ -37,8 +45,20 @@ def minifyHtml(inputFile, outputFile):
 
         outfile.write(minifiedHtml)
 
-def removeHtmlComments(html):
-    return re.sub(r'<!--(.*?)-->', '', html)
+def minify_style_tag(html_string):
+    # Define a regular expression pattern to match <style> tags and their content
+    style_tag_pattern = r'<style[^>]*>(.*?)</style>'
+    
+    # Function to minify the content of a <style> tag
+    def minify_css(match):
+        css_code = match.group(1)
+        minified_css = compress(css_code)
+        return f'<style>{minified_css}</style>'
+    
+    # Use re.sub() to find and replace <style> tags with minified content
+    minified_html = re.sub(style_tag_pattern, minify_css, html_string, flags=re.DOTALL)
+    
+    return minified_html
 
 ### Main program
 

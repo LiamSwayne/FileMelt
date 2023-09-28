@@ -8,9 +8,11 @@ Roadmap:
 - [x] Remove html comments.
 - [ ] Minify style tag.
     - [ ] Remove type="text/css".
-    - [ ] Remove spaces and newlines.
+    - [x] Remove spaces and newlines.
+- [ ] Minify hex codes.
 - [ ] Rename js variables.
 - [ ] Basic svg minification.
 - [ ] Remove dependencies.
     - [ ] htmlmin
     - [ ] jsmin
+    - [ ] csscompressor
