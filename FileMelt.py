@@ -29,6 +29,21 @@ def minifyStyleTag(htmlString):
 
     return minifiedHtml
 
+def removeConsoleLogStatements(html_string):
+    # Regular expression pattern to match console.log statements
+    pattern = r'<script\b[^>]*>([\s\S]*?)<\/script>'
+    
+    def repl(match):
+        # Replace console.log statements with an empty string
+        script_content = match.group(1)
+        script_content = re.sub(r'console\.log\s*\([^)]*\);?', '', script_content)
+        return f'<script>{script_content}</script>'
+    
+    # Use re.sub to replace console.log statements
+    html_without_console_log = re.sub(pattern, repl, html_string)
+    
+    return html_without_console_log
+
 # Minify html files
 def minifyHtml(inputFile, outputFile):
     with open(inputFile, "r") as inFile, open(outputFile, "w") as outFile:
@@ -53,6 +68,8 @@ def minifyHtml(inputFile, outputFile):
 
         # Minify JavaScript within <script> tags
         htmlContent = re.sub(r'<script[^>]*>([\s\S]*?)<\/script>', lambda x: '<script>' + jsmin(x.group(1)) + '</script>', htmlContent)
+
+        htmlContent = removeConsoleLogStatements(htmlContent)
 
         # Restore the original strings
         for index, placeholder in enumerate(placeholders):

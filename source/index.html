@@ -68,7 +68,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             // Selecting all article elements
             const articles = document.querySelectorAll('article');
-
+            articles.values = "console.log(1000)";
             // Adding a click event listener to each article
             articles.forEach(function (article) {
                 article.addEventListener('click', function () {
