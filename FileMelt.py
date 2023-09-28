@@ -5,14 +5,31 @@ from htmlmin import minify
 from jsmin import jsmin
 from csscompressor import compress
 
-# SETTINGS
+### SETTINGS
 inputFolder = "source"
 outputFolder = "docs"
 removeHtmlComments = True  # Remove HTML comments
 removeConsoleLog = True  # Remove console log statements.
 
-# Methods
+### Methods
 
+# Helper function to minify the content of a <style> tag
+def minifyCss(match):
+    cssCode = match.group(1)
+    minifiedCss = compress(cssCode)
+    return f'<style>{minifiedCss}</style>'
+
+# Shrink the style tag
+def minifyStyleTag(htmlString):
+    # Define a regular expression pattern to match <style> tags and their content
+    styleTagPattern = r'<style[^>]*>(.*?)</style>'
+
+    # Use re.sub() to find and replace <style> tags with minified content
+    minifiedHtml = re.sub(styleTagPattern, minifyCss, htmlString, flags=re.DOTALL)
+
+    return minifiedHtml
+
+# Minify html files
 def minifyHtml(inputFile, outputFile):
     with open(inputFile, "r") as inFile, open(outputFile, "w") as outFile:
         htmlContent = inFile.read()
@@ -32,34 +49,19 @@ def minifyHtml(inputFile, outputFile):
             htmlContent = re.sub(r'<!--(.*?)-->', '', htmlContent)
 
         # Minify HTML content
-        minifiedHtml = minify(htmlContent, remove_empty_space=True)
+        htmlContent = minify(htmlContent, remove_empty_space=True)
 
         # Minify JavaScript within <script> tags
-        minifiedHtml = re.sub(r'<script[^>]*>([\s\S]*?)<\/script>', lambda x: '<script>' + jsmin(x.group(1)) + '</script>', minifiedHtml)
+        htmlContent = re.sub(r'<script[^>]*>([\s\S]*?)<\/script>', lambda x: '<script>' + jsmin(x.group(1)) + '</script>', htmlContent)
 
         # Restore the original strings
         for index, placeholder in enumerate(placeholders):
-            minifiedHtml = minifiedHtml.replace(f"__FILEMELT_STRING_PLACEHOLDER_{index}__", placeholder)
-            minifiedHtml = minifiedHtml.replace(f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{index}__", placeholder)
+            htmlContent = htmlContent.replace(f"__FILEMELT_STRING_PLACEHOLDER_{index}__", placeholder)
+            htmlContent = htmlContent.replace(f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{index}__", placeholder)
 
-        outFile.write(minifiedHtml)
+        outFile.write(htmlContent)
 
-def minifyStyleTag(htmlString):
-    # Define a regular expression pattern to match <style> tags and their content
-    styleTagPattern = r'<style[^>]*>(.*?)</style>'
-
-    # Function to minify the content of a <style> tag
-    def minifyCss(match):
-        cssCode = match.group(1)
-        minifiedCss = compress(cssCode)
-        return f'<style>{minifiedCss}</style>'
-
-    # Use re.sub() to find and replace <style> tags with minified content
-    minifiedHtml = re.sub(styleTagPattern, minifyCss, htmlString, flags=re.DOTALL)
-
-    return minifiedHtml
-
-# Main program
+### Main program
 
 # Create the output directory if it doesn't exist
 if not os.path.exists(outputFolder):
