@@ -14,8 +14,15 @@ def minifyHtml(inputFile, outputFile):
     with open(inputFile, "r") as infile, open(outputFile, "w") as outfile:
         htmlContent = infile.read()
 
+        # Replace all strings with placeholders
+        placeholders = []
+        string_pattern = r'"(?:\\.|[^"\\])*"'
+        multiline_string_pattern = r'`[^`]*`'
+        htmlContent = re.sub(string_pattern, lambda x: placeholders.append(x.group()) or f"__STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
+        htmlContent = re.sub(multiline_string_pattern, lambda x: placeholders.append(x.group()) or f"__MULTILINE_STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
+
         # Remove HTML comments
-        htmlContent = re.sub(r'<!--(.*?)-->', '', htmlContent)
+        htmlContent = removeHtmlComments(htmlContent)
 
         # Minify HTML content
         minifiedHtml = html_minify(htmlContent, remove_empty_space=True)
@@ -23,7 +30,15 @@ def minifyHtml(inputFile, outputFile):
         # Minify JavaScript within <script> tags
         minifiedHtml = re.sub(r'<script[^>]*>([\s\S]*?)<\/script>', lambda x: '<script>' + jsmin(x.group(1)) + '</script>', minifiedHtml)
 
+        # Restore the original strings
+        for index, placeholder in enumerate(placeholders):
+            minifiedHtml = minifiedHtml.replace(f"__STRING_PLACEHOLDER_{index}__", placeholder)
+            minifiedHtml = minifiedHtml.replace(f"__MULTILINE_STRING_PLACEHOLDER_{index}__", placeholder)
+
         outfile.write(minifiedHtml)
+
+def removeHtmlComments(html):
+    return re.sub(r'<!--(.*?)-->', '', html)
 
 ### Main program
 
