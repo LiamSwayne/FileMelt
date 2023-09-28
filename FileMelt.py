@@ -1,6 +1,8 @@
 import os
 import shutil
-from htmlmin import minify
+import re
+from htmlmin import minify as html_minify
+from jsmin import jsmin
 
 ### SETTINGS
 inputFolder = "source"
@@ -11,7 +13,16 @@ outputFolder = "docs"
 def minifyHtml(inputFile, outputFile):
     with open(inputFile, "r") as infile, open(outputFile, "w") as outfile:
         htmlContent = infile.read()
-        minifiedHtml = minify(htmlContent, remove_empty_space=True)
+
+        # Remove HTML comments
+        htmlContent = re.sub(r'<!--(.*?)-->', '', htmlContent)
+
+        # Minify HTML content
+        minifiedHtml = html_minify(htmlContent, remove_empty_space=True)
+
+        # Minify JavaScript within <script> tags
+        minifiedHtml = re.sub(r'<script[^>]*>([\s\S]*?)<\/script>', lambda x: '<script>' + jsmin(x.group(1)) + '</script>', minifiedHtml)
+
         outfile.write(minifiedHtml)
 
 ### Main program
