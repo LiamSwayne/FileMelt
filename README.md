@@ -12,7 +12,7 @@ Roadmap:
 - [ ] Minify hex codes.
 - [ ] Rename js variables.
 - [ ] Basic svg minification.
-- [ ] Remove dependencies.
+- [ ] Replace dependencies with built-in functions.
     - [ ] htmlmin
     - [ ] jsmin
     - [ ] csscompressor
