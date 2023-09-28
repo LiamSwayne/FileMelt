@@ -1,5 +1,5 @@
 # FileMelt
-An everything minifier for web hosting.
+An everything minifier for websites.
 
 Write clean code while minimizing bandwidth costs.
 
