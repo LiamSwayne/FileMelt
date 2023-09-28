@@ -5,27 +5,27 @@ from htmlmin import minify
 from jsmin import jsmin
 from csscompressor import compress
 
-### SETTINGS
+# SETTINGS
 inputFolder = "source"
 outputFolder = "docs"
-removeHtmlComments = True # Remove HTML comments
-removeConsoleLog = True # Remove console log statements.
+removeHtmlComments = True  # Remove HTML comments
+removeConsoleLog = True  # Remove console log statements.
 
-### Methods
+# Methods
 
 def minifyHtml(inputFile, outputFile):
-    with open(inputFile, "r") as infile, open(outputFile, "w") as outfile:
-        htmlContent = infile.read()
+    with open(inputFile, "r") as inFile, open(outputFile, "w") as outFile:
+        htmlContent = inFile.read()
 
         # Replace all strings with placeholders
         placeholders = []
-        string_pattern = r'"(?:\\.|[^"\\])*"'
-        multiline_string_pattern = r'`[^`]*`'
-        htmlContent = re.sub(string_pattern, lambda x: placeholders.append(x.group()) or f"__FILEMELT_STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
-        htmlContent = re.sub(multiline_string_pattern, lambda x: placeholders.append(x.group()) or f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
+        stringPattern = r'"(?:\\.|[^"\\])*"'
+        multilineStringPattern = r'`[^`]*`'
+        htmlContent = re.sub(stringPattern, lambda x: placeholders.append(x.group()) or f"__FILEMELT_STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
+        htmlContent = re.sub(multilineStringPattern, lambda x: placeholders.append(x.group()) or f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
 
         # Minify style tag
-        htmlContent = minify_style_tag(htmlContent)
+        htmlContent = minifyStyleTag(htmlContent)
 
         # Remove HTML comments
         if removeHtmlComments:
@@ -42,24 +42,24 @@ def minifyHtml(inputFile, outputFile):
             minifiedHtml = minifiedHtml.replace(f"__FILEMELT_STRING_PLACEHOLDER_{index}__", placeholder)
             minifiedHtml = minifiedHtml.replace(f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{index}__", placeholder)
 
-        outfile.write(minifiedHtml)
+        outFile.write(minifiedHtml)
 
-def minify_style_tag(html_string):
+def minifyStyleTag(htmlString):
     # Define a regular expression pattern to match <style> tags and their content
-    style_tag_pattern = r'<style[^>]*>(.*?)</style>'
-    
-    # Function to minify the content of a <style> tag
-    def minify_css(match):
-        css_code = match.group(1)
-        minified_css = compress(css_code)
-        return f'<style>{minified_css}</style>'
-    
-    # Use re.sub() to find and replace <style> tags with minified content
-    minified_html = re.sub(style_tag_pattern, minify_css, html_string, flags=re.DOTALL)
-    
-    return minified_html
+    styleTagPattern = r'<style[^>]*>(.*?)</style>'
 
-### Main program
+    # Function to minify the content of a <style> tag
+    def minifyCss(match):
+        cssCode = match.group(1)
+        minifiedCss = compress(cssCode)
+        return f'<style>{minifiedCss}</style>'
+
+    # Use re.sub() to find and replace <style> tags with minified content
+    minifiedHtml = re.sub(styleTagPattern, minifyCss, htmlString, flags=re.DOTALL)
+
+    return minifiedHtml
+
+# Main program
 
 # Create the output directory if it doesn't exist
 if not os.path.exists(outputFolder):
