@@ -41,4 +41,4 @@ for root, _, files in os.walk(inputFolder):
 print("Total bytes in input folder: " + str(totalInputBytes) + " bytes")
 print("Total bytes in output folder: " + str(totalOutputBytes) + " bytes")
 percentDecrease = 1 - (totalOutputBytes / float(totalInputBytes))
-print("Percent decrease: " + str(round(percentDecrease*100, 4)) + "%")
+print("Percent decrease: " + str(round(percentDecrease * 100, 4)) + "%")
