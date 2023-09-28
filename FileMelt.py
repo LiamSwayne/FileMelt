@@ -1,7 +1,7 @@
 import os
 import shutil
 
-# Define input and output folders
+# SETTINGS
 inputFolder = "source"
 outputFolder = "docs"
 
