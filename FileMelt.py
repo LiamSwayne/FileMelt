@@ -21,8 +21,8 @@ def minifyHtml(inputFile, outputFile):
         placeholders = []
         string_pattern = r'"(?:\\.|[^"\\])*"'
         multiline_string_pattern = r'`[^`]*`'
-        htmlContent = re.sub(string_pattern, lambda x: placeholders.append(x.group()) or f"__STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
-        htmlContent = re.sub(multiline_string_pattern, lambda x: placeholders.append(x.group()) or f"__MULTILINE_STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
+        htmlContent = re.sub(string_pattern, lambda x: placeholders.append(x.group()) or f"__FILEMELT_STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
+        htmlContent = re.sub(multiline_string_pattern, lambda x: placeholders.append(x.group()) or f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
 
         # Minify style tag
         htmlContent = minify_style_tag(htmlContent)
@@ -39,8 +39,8 @@ def minifyHtml(inputFile, outputFile):
 
         # Restore the original strings
         for index, placeholder in enumerate(placeholders):
-            minifiedHtml = minifiedHtml.replace(f"__STRING_PLACEHOLDER_{index}__", placeholder)
-            minifiedHtml = minifiedHtml.replace(f"__MULTILINE_STRING_PLACEHOLDER_{index}__", placeholder)
+            minifiedHtml = minifiedHtml.replace(f"__FILEMELT_STRING_PLACEHOLDER_{index}__", placeholder)
+            minifiedHtml = minifiedHtml.replace(f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{index}__", placeholder)
 
         outfile.write(minifiedHtml)
 
