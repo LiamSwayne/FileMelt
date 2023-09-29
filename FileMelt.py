@@ -1,3 +1,4 @@
+# Imports
 import os
 import shutil
 import re
@@ -8,10 +9,12 @@ from csscompressor import compress
 ### SETTINGS
 inputFolder = "source"
 outputFolder = "docs"
-printFileStatistics = False # Print the size decrease of each individual file.
-removeHtmlComments = True  # Remove HTML comments
-removeSvgComments = True   # Remove svg comments
-removeConsoleLog = True    # Remove console log statements.
+deleteFilesMissingInput = True  # Delete files in output folder without corresponding input files
+printFileStatistics = True      # Print the size decrease of each individual file.
+removeHtmlComments = True       # Remove HTML comments
+removeSvgComments = True        # Remove svg comments
+minifyJsFiles = True            # Minify JS files (imperfect in some cases)
+removeConsoleLog = True         # Remove JavaScript console log statements.
 
 ### Methods
 
@@ -27,10 +30,9 @@ def minifyStyleTag(htmlString):
     styleTagPattern = r'<style[^>]*>(.*?)</style>'
 
     # Use re.sub() to find and replace <style> tags with minified content
-    minifiedHtml = re.sub(styleTagPattern, minifyCss, htmlString, flags=re.DOTALL)
+    return re.sub(styleTagPattern, minifyCss, htmlString, flags=re.DOTALL)
 
-    return minifiedHtml
-
+# Delete console log statements
 def removeConsoleLogStatements(html_string):
     # Regular expression pattern to match console.log statements
     pattern = r'<script\b[^>]*>([\s\S]*?)<\/script>'
@@ -41,10 +43,21 @@ def removeConsoleLogStatements(html_string):
         script_content = re.sub(r'console\.log\s*\([^)]*\);?', '', script_content)
         return f'<script>{script_content}</script>'
     
-    # Use re.sub to replace console.log statements
-    html_without_console_log = re.sub(pattern, repl, html_string)
+    # Use re.sub to replace console.log statements    
+    return re.sub(pattern, repl, html_string)
+
+# Function to minify script tags
+def minifyScriptTag(script_tag):
+    # Extract the script content
+    script_content = re.search(r'<script\b[^>]*>([\s\S]*?)<\/script>', script_tag).group(1)
     
-    return html_without_console_log
+    # Check if the script type is "module"
+    if 'type="module"' in script_tag:
+        # Preserve the type attribute for "module" scripts
+        return script_tag
+    else:
+        # Remove the type attribute for other scripts
+        return f'<script>{jsmin(script_content)}</script>'
 
 # Minify html files
 def minifyHtml(inputFile, outputFile):
@@ -69,7 +82,8 @@ def minifyHtml(inputFile, outputFile):
         htmlContent = minify(htmlContent, remove_empty_space=True)
 
         # Minify JavaScript within <script> tags
-        htmlContent = re.sub(r'<script[^>]*>([\s\S]*?)<\/script>', lambda x: '<script>' + jsmin(x.group(1)) + '</script>', htmlContent)
+        if minifyJsFiles:
+            htmlContent = re.sub(r'<script\b[^>]*>([\s\S]*?)<\/script>', lambda x: minifyScriptTag(x.group()), htmlContent)
 
         # Delete JavaScript console log statements
         htmlContent = removeConsoleLogStatements(htmlContent)
@@ -107,7 +121,32 @@ def minifySvg(inputFile, outputFile):
 
         outFile.write(svgContent)
 
-# Print statistics of fiven file
+# Minify js files
+def minifyJs(inputFile, outputFile):
+    with open(inputFile, "r") as inFile, open(outputFile, "w") as outFile:
+        jsContent = inFile.read()
+
+        # Replace all strings with placeholders
+        placeholders = []
+        stringPattern = r'"(?:\\.|[^"\\])*"'
+        multilineStringPattern = r'`[^`]*`'
+        jsContent = re.sub(stringPattern, lambda x: placeholders.append(x.group()) or f"__FILEMELT_STRING_PLACEHOLDER_{len(placeholders) - 1}__", jsContent)
+        jsContent = re.sub(multilineStringPattern, lambda x: placeholders.append(x.group()) or f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{len(placeholders) - 1}__", jsContent)
+
+        # Remove html format comments in JavaScript
+        jsContent = re.sub(r'<!--(.*?)-->', '', jsContent)
+
+        # Minify JavaScript
+        jsContent = jsmin(jsContent)
+
+        # Restore the original strings
+        for index, placeholder in enumerate(placeholders):
+            jsContent = jsContent.replace(f"__FILEMELT_STRING_PLACEHOLDER_{index}__", placeholder)
+            jsContent = jsContent.replace(f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{index}__", placeholder)
+
+        outFile.write(jsContent)
+
+# Print statistics of given file
 def getFileStats(inputFilename, inputSize, outputSize):
     print(inputFilename)
     print(str(inputSize) + " --> "+ str(outputSize) + " bytes")
@@ -132,6 +171,8 @@ for root, _, files in os.walk(inputFolder):
             minifyHtml(inputFile, outputFile)
         elif filename.endswith(".svg"):
             minifySvg(inputFile, outputFile)
+        elif filename.endswith(".js") and minifyJsFiles:
+            minifyJs(inputFile, outputFile)
         else:
             # Copy non-HTML files to the output folder
             shutil.copy(inputFile, outputFile)

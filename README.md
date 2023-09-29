@@ -3,6 +3,9 @@ An everything minifier for websites.
 
 Write clean code while minimizing bandwidth costs.
 
+Limitations:
+- JS minifier is imperfect
+
 Roadmap:
 - [x] Basic HTML minification.
 - [x] Remove html comments.
@@ -17,7 +20,10 @@ Roadmap:
 - [ ] Remove unecessary script tags.
     - [x] Remove empty scripts.
     - [ ] Merge scripts when possible.
+- [x] Minify JavaScript files.
+- [ ] Preserve module attribute in script tags.
 - [x] Option to print individual file stats.
+- [ ] Avoid deleting copyright or license comments.
 - [ ] Replace dependencies with built-in functions.
     - [ ] htmlmin
     - [ ] jsmin
