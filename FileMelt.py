@@ -69,6 +69,7 @@ def minifyHtml(inputFile, outputFile):
         # Minify JavaScript within <script> tags
         htmlContent = re.sub(r'<script[^>]*>([\s\S]*?)<\/script>', lambda x: '<script>' + jsmin(x.group(1)) + '</script>', htmlContent)
 
+        # Delete JavaScript console log statements
         htmlContent = removeConsoleLogStatements(htmlContent)
 
         # Restore the original strings
