@@ -21,7 +21,8 @@ Roadmap:
     - [x] Remove empty scripts.
     - [ ] Merge scripts when possible.
 - [x] Minify JavaScript files.
-- [ ] Preserve module attribute in script tags.
+- [ ] Option to delete files in output with matching input.
+- [x] Preserve module attribute in script tags.
 - [x] Option to print individual file stats.
 - [ ] Avoid deleting copyright or license comments.
 - [ ] Replace dependencies with built-in functions.

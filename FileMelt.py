@@ -32,24 +32,50 @@ def minifyStyleTag(htmlString):
     # Use re.sub() to find and replace <style> tags with minified content
     return re.sub(styleTagPattern, minifyCss, htmlString, flags=re.DOTALL)
 
+# Process script tags
+def processScriptTags(match):
+    script_content = match.group(1)
+    if re.search(r'type\s*=\s*["\']?module["\']?', match.group(0), re.IGNORECASE):
+        # If the <script> tag has type="module", keep it
+        return "<script type=\"module\">" + jsmin(script_content) + "</script>"
+    else:
+        # If the <script> tag doesn't have type="module", remove the type attribute
+        return '<script>' + jsmin(script_content) + '</script>'
+
 # Delete console log statements
 def removeConsoleLogStatements(html_string):
-    # Regular expression pattern to match console.log statements
-    pattern = r'<script\b[^>]*>([\s\S]*?)<\/script>'
+    # Regular expression pattern to match script tags
+    script_pattern = r'<script\b([^>]*)>([\s\S]*?)<\/script>'
     
     def repl(match):
-        # Replace console.log statements with an empty string
-        script_content = match.group(1)
+        # Extract attributes and script content
+        attributes = match.group(1)
+        script_content = match.group(2)
+        
+        # Remove console.log statements from script content
         script_content = re.sub(r'console\.log\s*\([^)]*\);?', '', script_content)
-        return f'<script>{script_content}</script>'
+        
+        # Reconstruct the script tag with attributes (if any)
+        if attributes:
+            if "type=module" in attributes:
+                attributes.replace("type=module","type=\"module\"")
+            attributes = attributes.lstrip()
+            return f'<script {attributes}>{script_content}</script>'
+        else:
+            return f'<script>{script_content}</script>'
     
-    # Use re.sub to replace console.log statements    
-    return re.sub(pattern, repl, html_string)
+    # Use re.sub to replace and modify script tags
+    return re.sub(script_pattern, repl, html_string)
 
 # Minify html files
 def minifyHtml(inputFile, outputFile):
     with open(inputFile, "r") as inFile, open(outputFile, "w") as outFile:
         htmlContent = inFile.read()
+
+        # Substitute type="module" with placeholders
+        type_module_pattern = re.compile(r'type\s*=\s*(?:"module"|\'module\')')
+        type_module_placeholders = []
+        htmlContent, _ = re.subn(type_module_pattern, lambda x: type_module_placeholders.append(x.group()) or r'__FILEMELT_TYPE_MODULE_PLACEHOLDER__', htmlContent)
 
         # Replace all strings with placeholders
         placeholders = []
@@ -58,6 +84,12 @@ def minifyHtml(inputFile, outputFile):
         htmlContent = re.sub(stringPattern, lambda x: placeholders.append(x.group()) or f"__FILEMELT_STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
         htmlContent = re.sub(multilineStringPattern, lambda x: placeholders.append(x.group()) or f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{len(placeholders) - 1}__", htmlContent)
 
+        # Resubstitute type="module"
+        htmlContent = re.sub(r'__FILEMELT_TYPE_MODULE_PLACEHOLDER__', lambda x: type_module_placeholders.pop(0), htmlContent)
+
+        # Process scripts
+        htmlContent = re.sub(r'<script[^>]*>([\s\S]*?)<\/script>', processScriptTags, htmlContent)
+
         # Minify style tag
         htmlContent = minifyStyleTag(htmlContent)
 
@@ -65,12 +97,8 @@ def minifyHtml(inputFile, outputFile):
         if removeHtmlComments:
             htmlContent = re.sub(r'<!--(.*?)-->', '', htmlContent)
 
-        # Minify HTML content
+        # Minify HTML content (changes type="module" to type=module)
         htmlContent = minify(htmlContent, remove_empty_space=True)
-
-        # Minify JavaScript within <script> tags
-        if minifyJsFiles:
-            htmlContent = re.sub(r'<script[^>]*>([\s\S]*?)<\/script>', lambda x: '<script>' + jsmin(x.group(1)) + '</script>', htmlContent)
 
         # Delete JavaScript console log statements
         htmlContent = removeConsoleLogStatements(htmlContent)
