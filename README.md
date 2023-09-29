@@ -11,7 +11,6 @@ Roadmap:
     - [x] Remove spaces and newlines.
 - [ ] Minify hexcodes in style attributes.
 - [x] Setting for removing console.log statements
-- [ ] Rename js variables.
 - [ ] Basic svg minification.
 - [ ] Remove unecessary script tags.
     - [x] Remove empty scripts.
