@@ -8,8 +8,10 @@ from csscompressor import compress
 ### SETTINGS
 inputFolder = "source"
 outputFolder = "docs"
+printFileStatistics = False # Print the size decrease of each individual file.
 removeHtmlComments = True  # Remove HTML comments
-removeConsoleLog = True  # Remove console log statements.
+removeSvgComments = True   # Remove svg comments
+removeConsoleLog = True    # Remove console log statements.
 
 ### Methods
 
@@ -85,7 +87,32 @@ def minifyHtml(inputFile, outputFile):
 # Minify svg files
 def minifySvg(inputFile, outputFile):
     with open(inputFile, "r") as inFile, open(outputFile, "w") as outFile:
-        htmlContent = inFile.read()
+        svgContent = inFile.read()
+
+        # Replace all strings with placeholders
+        placeholders = []
+        stringPattern = r'"(?:\\.|[^"\\])*"'
+        multilineStringPattern = r'`[^`]*`'
+        svgContent = re.sub(stringPattern, lambda x: placeholders.append(x.group()) or f"__FILEMELT_STRING_PLACEHOLDER_{len(placeholders) - 1}__", svgContent)
+        svgContent = re.sub(multilineStringPattern, lambda x: placeholders.append(x.group()) or f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{len(placeholders) - 1}__", svgContent)
+
+        # Remove svg comments
+        if removeSvgComments:
+            svgContent = re.sub(r'<!--(.*?)-->', '', svgContent)
+
+        # Restore the original strings
+        for index, placeholder in enumerate(placeholders):
+            svgContent = svgContent.replace(f"__FILEMELT_STRING_PLACEHOLDER_{index}__", placeholder)
+            svgContent = svgContent.replace(f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{index}__", placeholder)
+
+        outFile.write(svgContent)
+
+# Print statistics of fiven file
+def getFileStats(inputFilename, inputSize, outputSize):
+    print(inputFilename)
+    print(str(inputSize) + " --> "+ str(outputSize) + " bytes")
+    percentDecrease = 1 - (outputSize / float(inputSize))
+    print("Size decrease: " + str(round(percentDecrease * 100, 4)) + "%\n")
 
 ### Main program
 
@@ -111,13 +138,19 @@ for root, _, files in os.walk(inputFolder):
             fileSize = os.path.getsize(inputFile)
             totalInputBytes += fileSize
             totalOutputBytes += fileSize
+            if printFileStatistics:
+                getFileStats(filename, fileSize, fileSize)
             continue
 
         # Calculate total bytes
-        totalInputBytes += os.path.getsize(inputFile)
-        totalOutputBytes += os.path.getsize(outputFile)
+        inputSize = os.path.getsize(inputFile)
+        outputSize = os.path.getsize(outputFile)
+        totalInputBytes += inputSize
+        totalOutputBytes += outputSize
+        if printFileStatistics:
+            getFileStats(filename, inputSize, outputSize)
 
 print("Total bytes in input folder: " + str(totalInputBytes) + " bytes")
 print("Total bytes in output folder: " + str(totalOutputBytes) + " bytes")
 percentDecrease = 1 - (totalOutputBytes / float(totalInputBytes))
-print("Size decrease: " + str(round(percentDecrease * 100, 4)) + "%")
+print("Total size decrease: " + str(round(percentDecrease * 100, 4)) + "%")
