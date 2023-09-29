@@ -46,19 +46,6 @@ def removeConsoleLogStatements(html_string):
     # Use re.sub to replace console.log statements    
     return re.sub(pattern, repl, html_string)
 
-# Function to minify script tags
-def minifyScriptTag(script_tag):
-    # Extract the script content
-    script_content = re.search(r'<script\b[^>]*>([\s\S]*?)<\/script>', script_tag).group(1)
-    
-    # Check if the script type is "module"
-    if 'type="module"' in script_tag:
-        # Preserve the type attribute for "module" scripts
-        return script_tag
-    else:
-        # Remove the type attribute for other scripts
-        return f'<script>{jsmin(script_content)}</script>'
-
 # Minify html files
 def minifyHtml(inputFile, outputFile):
     with open(inputFile, "r") as inFile, open(outputFile, "w") as outFile:
@@ -83,7 +70,7 @@ def minifyHtml(inputFile, outputFile):
 
         # Minify JavaScript within <script> tags
         if minifyJsFiles:
-            htmlContent = re.sub(r'<script\b[^>]*>([\s\S]*?)<\/script>', lambda x: minifyScriptTag(x.group()), htmlContent)
+            htmlContent = re.sub(r'<script[^>]*>([\s\S]*?)<\/script>', lambda x: '<script>' + jsmin(x.group(1)) + '</script>', htmlContent)
 
         # Delete JavaScript console log statements
         htmlContent = removeConsoleLogStatements(htmlContent)
