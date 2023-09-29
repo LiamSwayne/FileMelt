@@ -13,6 +13,9 @@ Roadmap:
 - [x] Setting for removing console.log statements
 - [ ] Rename js variables.
 - [ ] Basic svg minification.
+- [ ] Remove unecessary script tags.
+    - [x] Remove empty scripts.
+    - [ ] Merge scripts when possible.
 - [ ] Replace dependencies with built-in functions.
     - [ ] htmlmin
     - [ ] jsmin

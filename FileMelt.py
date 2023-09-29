@@ -72,6 +72,9 @@ def minifyHtml(inputFile, outputFile):
         # Delete JavaScript console log statements
         htmlContent = removeConsoleLogStatements(htmlContent)
 
+        # Remove empty scripts
+        htmlContent = re.sub(r'<script[^>]*>\s*</script>', '', htmlContent)
+
         # Restore the original strings
         for index, placeholder in enumerate(placeholders):
             htmlContent = htmlContent.replace(f"__FILEMELT_STRING_PLACEHOLDER_{index}__", placeholder)
