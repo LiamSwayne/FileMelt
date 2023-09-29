@@ -82,6 +82,11 @@ def minifyHtml(inputFile, outputFile):
 
         outFile.write(htmlContent)
 
+# Minify svg files
+def minifySvg(inputFile, outputFile):
+    with open(inputFile, "r") as inFile, open(outputFile, "w") as outFile:
+        htmlContent = inFile.read()
+
 ### Main program
 
 # Create the output directory if it doesn't exist
@@ -98,9 +103,15 @@ for root, _, files in os.walk(inputFolder):
 
         if filename.endswith(".html"):
             minifyHtml(inputFile, outputFile)
+        elif filename.endswith(".svg"):
+            minifySvg(inputFile, outputFile)
         else:
             # Copy non-HTML files to the output folder
             shutil.copy(inputFile, outputFile)
+            fileSize = os.path.getsize(inputFile)
+            totalInputBytes += fileSize
+            totalOutputBytes += fileSize
+            continue
 
         # Calculate total bytes
         totalInputBytes += os.path.getsize(inputFile)
