@@ -18,19 +18,19 @@ removeConsoleLog = True         # Remove JavaScript console log statements.
 
 ### Methods
 
-# Helper function to minify the content of a <style> tag
-def minifyCss(match):
-    cssCode = match.group(1)
-    minifiedCss = compress(cssCode)
-    return f'<style>{minifiedCss}</style>'
-
 # Shrink the style tag
 def minifyStyleTag(htmlString):
+    # Helper function to minify the content of inside <style> tag
+    def minifyStyleContent(match):
+        cssCode = match.group(1)
+        minifiedCss = compress(cssCode)
+        return f'<style>{minifiedCss}</style>'
+
     # Define a regular expression pattern to match <style> tags and their content
     styleTagPattern = r'<style[^>]*>(.*?)</style>'
 
     # Use re.sub() to find and replace <style> tags with minified content
-    return re.sub(styleTagPattern, minifyCss, htmlString, flags=re.DOTALL)
+    return re.sub(styleTagPattern, minifyStyleContent, htmlString, flags=re.DOTALL)
 
 # Process script tags
 def processScriptTags(match):
