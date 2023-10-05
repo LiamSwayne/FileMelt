@@ -17,9 +17,8 @@ Roadmap:
 - [ ] Basic svg minification.
     - [x] Remove comments.
     - [ ] Classes only used once are changed to style="".
-- [ ] Remove unecessary script tags.
-    - [x] Remove empty scripts.
-    - [ ] Merge scripts when possible.
+- [x] Remove empty scripts.
+- [ ] Merge scripts when possible.
 - [x] Minify JavaScript files.
 - [ ] Option to delete files in output with matching input.
 - [x] Preserve module attribute in script tags.
