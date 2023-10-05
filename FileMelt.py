@@ -117,30 +117,29 @@ def minifyHtml(inputFile, outputFile):
         outFile.write(htmlContent)
 
 # Minify the style of an svg
-def minifySvgStyleTag(svg_input):
+def minifySvgStyleTag(svgInput):
     # Find the <style> tag and its content using regex
-    style_match = re.search(r'<style.*?>(.*?)</style>', svg_input, re.DOTALL)
+    styleMatch = re.search(r'<style.*?>(.*?)</style>', svgInput, re.DOTALL)
     
-    if style_match:
-        style_content = style_match.group(1)
+    if styleMatch:
+        styleContent = styleMatch.group(1)
         
         # Minify the CSS using csscompressor
-        minified_css = compress(style_content)
+        minifiedCss = compress(styleContent)
         
         # Replace the original CSS with the minified CSS in the SVG
-        minified_svg = re.sub(r'<style.*?>(.*?)</style>', f'<style>{minified_css}</style>', svg_input, flags=re.DOTALL)
+        minifiedSvg = re.sub(r'<style.*?>(.*?)</style>', f'<style>{minifiedCss}</style>', svgInput, flags=re.DOTALL)
         
-        return minified_svg
+        return minifiedSvg
     
     # If no <style> tag is found, return the original SVG
-    return svg_input
-
+    return svgInput
 
 # XML svg minification
-def xmlSvgMinification(input_svg):
+def xmlSvgMinification(inputSvg):
     try:
         # Parse the input SVG file
-        root = xml.etree.ElementTree.fromstring(input_svg)
+        root = xml.etree.ElementTree.fromstring(inputSvg)
         
         # Remove unnecessary whitespace and indentation
         for element in root.iter():
@@ -150,12 +149,12 @@ def xmlSvgMinification(input_svg):
                 element.tail = element.tail.strip()
 
         # Serialize the minified SVG back to a string
-        minified_svg = xml.etree.ElementTree.tostring(root, encoding='utf-8').decode('utf-8')
+        minifiedSvg = xml.etree.ElementTree.tostring(root, encoding='utf-8').decode('utf-8')
         
         # Remove extra whitespace between tags
-        minified_svg = re.sub(r'>\s+<', '><', minified_svg)
+        minifiedSvg = re.sub(r'>\s+<', '><', minifiedSvg)
 
-        svgNoNs0Elements = re.sub(r'<ns0:(.*?)>', r'<\1>', minified_svg)
+        svgNoNs0Elements = re.sub(r'<ns0:(.*?)>', r'<\1>', minifiedSvg)
         
         # Remove ns0: prefix from attributes
         svgNoNs0Attributes = re.sub(r'ns0:', '', svgNoNs0Elements)
@@ -246,16 +245,15 @@ totalOutputBytes = 0
 
 # Delete the output folder if files without sources should be removed
 if deleteFilesMissingInput:
-    # Clear the output folder
-    for file_name in os.listdir(outputFolder):
-        file_path = os.path.join(outputFolder, file_name)
+    for fileName in os.listdir(outputFolder):
+        filePath = os.path.join(outputFolder, fileName)
         try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
+            if os.path.isfile(filePath):
+                os.unlink(filePath)
+            elif os.path.isdir(filePath):
+                shutil.rmtree(filePath)
         except Exception as e:
-            print(f"Failed to delete {file_path}: {e}")
+            print(f"Failed to delete {filePath}: {e}")
 
 # Search directory and minify files
 for root, _, files in os.walk(inputFolder):
