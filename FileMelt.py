@@ -3,12 +3,14 @@ import os
 import shutil
 import re
 import subprocess
+import xml.dom.minidom
+from io import StringIO
 
 # External dependencies
 from htmlmin import minify
 from jsmin import jsmin
 from csscompressor import compress
-# also relies on scour, which can be installed with "pip install scour"
+import svgwrite
 
 ### SETTINGS
 inputFolder = "source"
@@ -117,23 +119,25 @@ def minifyHtml(inputFile, outputFile):
 
         outFile.write(htmlContent)
 
-# Scour svg minification
-def scourCliMinifySvg(input_svg):
-    try:
-        # Create a subprocess to run scour with the input SVG as an argument
-        command = "scour -i "+inputFile+" --enable-comment-stripping -o -"
-        result = subprocess.run(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+# svgwrite svg minification
+def svgwriteMinifySvg(input_svg):
+    # Create an SVG drawing object from the input SVG string
+    drawing = svgwrite.Drawing()
+    drawing.fromstring(input_svg)
 
-        if result.returncode == 0:
-            # Return the minified SVG as a string
-            return result.stdout
-        else:
-            # If an error occurred, print the error message
-            print("Error:", result.stderr)
-            return None
-    except Exception as e:
-        print("An error occurred:", str(e))
-        return None
+    # Create a StringIO object to hold the minified SVG
+    minified_svg = StringIO()
+
+    # Write the SVG content to the StringIO object with minification
+    drawing.write(minified_svg, pretty=False)
+
+    # Get the minified SVG as a string
+    minified_svg_str = minified_svg.getvalue()
+
+    # Close the StringIO object
+    minified_svg.close()
+
+    return minified_svg_str
 
 # Minify svg files
 def minifySvg(inputFile, outputFile):
@@ -156,10 +160,8 @@ def minifySvg(inputFile, outputFile):
             svgContent = svgContent.replace(f"__FILEMELT_STRING_PLACEHOLDER_{index}__", placeholder)
             svgContent = svgContent.replace(f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{index}__", placeholder)
 
-        # second pass with of minification with scour from command line        
-        scourOutput = scourCliMinifySvg(inputFile)
-        if scourOutput != None:
-            svgContent = scourOutput
+        # second pass with of minification with svgwrtie  
+        svgContent = svgwriteMinifySvg(svgContent)
 
         outFile.write(svgContent)
 
