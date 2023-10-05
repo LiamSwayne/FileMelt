@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 93">
+  <defs>
+    <style>
+      .cls-1 {
+        letter-spacing: -.01em;
+      }
+
+      .cls-2 {
+        letter-spacing: -.04em;
+      }
+
+      .cls-3 {
+        letter-spacing: 0em;
+      }
+
+      .cls-4 {
+        letter-spacing: .02em;
+      }
+
+      .cls-5 {
+        letter-spacing: -.01em;
+      }
+
+      .cls-6 {
+        letter-spacing: 0em;
+      }
+
+      .cls-7 {
+        letter-spacing: 0em;
+      }
+
+      .cls-8 {
+        letter-spacing: 0em;
+      }
+
+      .cls-9 {
+        font-family: MyriadPro-Regular, 'Myriad Pro';
+        font-size: 12px;
+      }
+
+      .cls-10 {
+        letter-spacing: 0em;
+      }
+
+      .cls-11 {
+        fill: none;
+        stroke: #fbb03b;
+        stroke-miterlimit: 10;
+        stroke-width: 4px;
+      }
+
+      .cls-12 {
+        letter-spacing: 0em;
+      }
+
+      .cls-13 {
+        letter-spacing: .01em;
+      }
+    </style>
+  </defs>
+  <text class="cls-9" transform="translate(12.28 28.92)"><tspan x="0" y="0">&lt;!--</tspan><tspan class="cls-2" x="17.28" y="0"> </tspan><tspan class="cls-7" x="19.33" y="0">T</tspan><tspan class="cls-6" x="25.21" y="0">his </tspan><tspan class="cls-8" x="41.98" y="0">t</tspan><tspan class="cls-3" x="45.88" y="0">e</tspan><tspan class="cls-13" x="51.85" y="0">x</tspan><tspan x="57.56" y="0">t</tspan><tspan x="0" y="14.4">is in an s</tspan><tspan class="cls-1" x="41.86" y="14.4">v</tspan><tspan class="cls-5" x="47.51" y="14.4">g</tspan><tspan x="54.04" y="14.4">.</tspan><tspan class="cls-4" x="0" y="28.8">I</tspan><tspan x="3.06" y="28.8">t should not be</tspan><tspan class="cls-12" x="0" y="43.2">r</tspan><tspan x="3.8" y="43.2">em</tspan><tspan class="cls-7" x="19.82" y="43.2">o</tspan><tspan class="cls-1" x="26.33" y="43.2">v</tspan><tspan class="cls-10" x="31.98" y="43.2">e</tspan><tspan class="cls-1" x="37.99" y="43.2">d</tspan><tspan class="cls-10" x="44.64" y="43.2">.</tspan></text>
+  <rect class="cls-11" x="2" y="2" width="92" height="89"/>
+</svg>
