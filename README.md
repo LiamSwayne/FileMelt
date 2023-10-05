@@ -16,12 +16,13 @@ Roadmap:
 - [x] Setting for removing console.log statements
 - [ ] Basic svg minification.
     - [x] Remove comments.
-    - [ ] Simplify style tags
+    - [x] Simplify style tags
     - [ ] Classes only used once are changed to style="".
+- [ ] Minify svgs in html files
 - [x] Remove empty scripts.
 - [ ] Merge scripts when possible.
 - [x] Minify JavaScript files.
-- [ ] Option to delete files in output with matching input.
+- [x] Option to delete files in output with matching input.
 - [x] Preserve module attribute in script tags.
 - [x] Option to print individual file stats.
 - [ ] Avoid deleting copyright or license comments.

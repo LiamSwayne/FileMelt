@@ -232,9 +232,24 @@ def getFileStats(inputFilename, inputSize, outputSize):
 if not os.path.exists(outputFolder):
     os.makedirs(outputFolder)
 
+# Byte counts
 totalInputBytes = 0
 totalOutputBytes = 0
 
+# Delete the output folder if files without sources should be removed
+if deleteFilesMissingInput:
+    # Clear the output folder
+    for file_name in os.listdir(outputFolder):
+        file_path = os.path.join(outputFolder, file_name)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print(f"Failed to delete {file_path}: {e}")
+
+# Search directory and minify files
 for root, _, files in os.walk(inputFolder):
     for filename in files:
         inputFile = os.path.join(root, filename)
