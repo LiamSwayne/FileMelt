@@ -2,9 +2,7 @@
 import os
 import shutil
 import re
-import subprocess
-import xml.dom.minidom
-from io import StringIO
+import xml.etree.ElementTree
 
 # External dependencies
 from htmlmin import minify
@@ -119,25 +117,53 @@ def minifyHtml(inputFile, outputFile):
 
         outFile.write(htmlContent)
 
-# svgwrite svg minification
-def svgwriteMinifySvg(input_svg):
-    # Create an SVG drawing object from the input SVG string
-    drawing = svgwrite.Drawing()
-    drawing.fromstring(input_svg)
+# Minify the style of an svg
+def minifySvgStyleTag(svg_input):
+    # Find the <style> tag and its content using regex
+    style_match = re.search(r'<style.*?>(.*?)</style>', svg_input, re.DOTALL)
+    
+    if style_match:
+        style_content = style_match.group(1)
+        
+        # Minify the CSS using csscompressor
+        minified_css = compress(style_content)
+        
+        # Replace the original CSS with the minified CSS in the SVG
+        minified_svg = re.sub(r'<style.*?>(.*?)</style>', f'<style>{minified_css}</style>', svg_input, flags=re.DOTALL)
+        
+        return minified_svg
+    
+    # If no <style> tag is found, return the original SVG
+    return svg_input
 
-    # Create a StringIO object to hold the minified SVG
-    minified_svg = StringIO()
 
-    # Write the SVG content to the StringIO object with minification
-    drawing.write(minified_svg, pretty=False)
+# XML svg minification
+def xmlSvgMinification(input_svg):
+    try:
+        # Parse the input SVG file
+        root = xml.etree.ElementTree.fromstring(input_svg)
+        
+        # Remove unnecessary whitespace and indentation
+        for element in root.iter():
+            if element.text:
+                element.text = element.text.strip()
+            if element.tail:
+                element.tail = element.tail.strip()
 
-    # Get the minified SVG as a string
-    minified_svg_str = minified_svg.getvalue()
+        # Serialize the minified SVG back to a string
+        minified_svg = xml.etree.ElementTree.tostring(root, encoding='utf-8').decode('utf-8')
+        
+        # Remove extra whitespace between tags
+        minified_svg = re.sub(r'>\s+<', '><', minified_svg)
 
-    # Close the StringIO object
-    minified_svg.close()
-
-    return minified_svg_str
+        svgNoNs0Elements = re.sub(r'<ns0:(.*?)>', r'<\1>', minified_svg)
+        
+        # Remove ns0: prefix from attributes
+        svgNoNs0Attributes = re.sub(r'ns0:', '', svgNoNs0Elements)
+        
+        return svgNoNs0Attributes
+    except xml.etree.ElementTree.ParseError:
+        raise Exception("Invalid SVG input")
 
 # Minify svg files
 def minifySvg(inputFile, outputFile):
@@ -155,13 +181,16 @@ def minifySvg(inputFile, outputFile):
         if removeSvgComments:
             svgContent = re.sub(r'<!--(.*?)-->', '', svgContent)
 
+        # Minify style tag of svg
+        svgContent  =minifySvgStyleTag(svgContent)
+
         # Restore the original strings
         for index, placeholder in enumerate(placeholders):
             svgContent = svgContent.replace(f"__FILEMELT_STRING_PLACEHOLDER_{index}__", placeholder)
             svgContent = svgContent.replace(f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{index}__", placeholder)
 
-        # second pass with of minification with svgwrtie  
-        svgContent = svgwriteMinifySvg(svgContent)
+        # second pass with of minification with element tree (built-in)  
+        svgContent = xmlSvgMinification(svgContent)
 
         outFile.write(svgContent)
 

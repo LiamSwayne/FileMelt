@@ -16,6 +16,7 @@ Roadmap:
 - [x] Setting for removing console.log statements
 - [ ] Basic svg minification.
     - [x] Remove comments.
+    - [ ] Simplify style tags
     - [ ] Classes only used once are changed to style="".
 - [x] Remove empty scripts.
 - [ ] Merge scripts when possible.
