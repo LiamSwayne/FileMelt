@@ -182,15 +182,18 @@ def minifySvg(inputFile, outputFile):
             svgContent = re.sub(r'<!--(.*?)-->', '', svgContent)
 
         # Minify style tag of svg
-        svgContent  =minifySvgStyleTag(svgContent)
+        svgContent = minifySvgStyleTag(svgContent)
 
         # Restore the original strings
         for index, placeholder in enumerate(placeholders):
             svgContent = svgContent.replace(f"__FILEMELT_STRING_PLACEHOLDER_{index}__", placeholder)
             svgContent = svgContent.replace(f"__FILEMELT_MULTILINE_STRING_PLACEHOLDER_{index}__", placeholder)
 
-        # second pass with of minification with element tree (built-in)  
+        # Second pass with of minification with element tree (built-in)  
         svgContent = xmlSvgMinification(svgContent)
+
+        # Remove ns0
+        svgContent = svgContent.replace("xmlns:ns0","xmlns")
 
         outFile.write(svgContent)
 
@@ -262,15 +265,9 @@ for root, _, files in os.walk(inputFolder):
         elif filename.endswith(".js") and minifyJsFiles:
             minifyJs(inputFile, outputFile)
         else:
-            # Copy non-HTML files to the output folder
+            # Copy unsupported files to the output folder
             shutil.copy(inputFile, outputFile)
-            fileSize = os.path.getsize(inputFile)
-            totalInputBytes += fileSize
-            totalOutputBytes += fileSize
-            if printFileStatistics:
-                getFileStats(filename, fileSize, fileSize)
-            continue
-
+        
         # Calculate total bytes
         inputSize = os.path.getsize(inputFile)
         outputSize = os.path.getsize(outputFile)
