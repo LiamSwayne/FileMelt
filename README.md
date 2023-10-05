@@ -10,6 +10,7 @@ Write clean code while minimizing bandwidth costs.
 
 Roadmap:
 - [x] Basic HTML minification.
+- [x] CSS minification.
 - [x] Remove html comments.
 - [x] Minify style tag.
     - [x] Remove type="text/css".
@@ -18,9 +19,9 @@ Roadmap:
 - [x] Setting for removing console.log statements
 - [ ] Basic svg minification.
     - [x] Remove comments.
-    - [x] Simplify style tags
-    - [ ] Classes only used once are changed to style="".
-- [ ] Minify svgs in html files
+    - [x] Simplify style tags.
+    - [ ] Classes only used once are substituted for style attribute.
+- [ ] Minify svgs in html files.
 - [x] Remove empty scripts.
 - [ ] Merge scripts when possible.
 - [x] Minify JavaScript files.
@@ -28,6 +29,7 @@ Roadmap:
 - [x] Preserve module attribute in script tags.
 - [x] Option to print individual file stats.
 - [ ] Avoid deleting copyright or license comments.
+- [ ] 
 - [ ] Replace dependencies with built-in functions.
     - [ ] htmlmin
     - [ ] jsmin

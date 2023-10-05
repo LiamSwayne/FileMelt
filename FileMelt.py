@@ -8,7 +8,6 @@ import xml.etree.ElementTree
 from htmlmin import minify
 from jsmin import jsmin
 from csscompressor import compress
-import svgwrite
 
 ### SETTINGS
 inputFolder = "source"
@@ -222,6 +221,12 @@ def minifyJs(inputFile, outputFile):
 
         outFile.write(jsContent)
 
+# Minify CSS files
+def minifyCss(inputFile, outputFile):
+    with open(inputFile, "r") as inFile, open(outputFile, "w") as outFile:
+        cssContent = inFile.read()
+        outFile.write(compress(cssContent))
+
 # Print statistics of given file
 def getFileStats(inputFilename, inputSize, outputSize):
     print(inputFilename)
@@ -258,12 +263,14 @@ for root, _, files in os.walk(inputFolder):
         inputFile = os.path.join(root, filename)
         outputFile = os.path.join(outputFolder, filename)
 
-        if filename.endswith(".html"):
+        if filename.endswith(".css"):
+            minifyJs(inputFile, outputFile)
+        elif filename.endswith(".html"):
             minifyHtml(inputFile, outputFile)
-        elif filename.endswith(".svg"):
-            minifySvg(inputFile, outputFile)
         elif filename.endswith(".js") and minifyJsFiles:
             minifyJs(inputFile, outputFile)
+        elif filename.endswith(".svg"):
+            minifySvg(inputFile, outputFile)
         else:
             # Copy unsupported files to the output folder
             shutil.copy(inputFile, outputFile)
