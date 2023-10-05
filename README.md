@@ -3,10 +3,10 @@ An everything minifier for websites.
 
 Write clean code while minimizing bandwidth costs.
 
-| Pros  | Cons |
+| Pros | Cons |
 | ------------- | ------------- |
-| Saves significant bandwidth  | Increases git repo size quickly |
-|   | JS minifier is imperfect  |
+| Saves significant bandwidth | Increases git repo size quickly |
+| Makes your site load faster | JS minifier is imperfect (but can be disabled) |
 
 Roadmap:
 - [x] Basic HTML minification.
