@@ -11,7 +11,7 @@
 The only file you need is [FileMelt.py](https://github.com/LiamSwayne/FileMelt/blob/main/FileMelt.py). Add it to your repository, and assign the input and output directories at the top of the file (and optionally modify the settings also in the file). Each time you run `FileMelt.py`, it will generate a minfied output directory of all files in the input directory, including files that FileMelt cannot minify (yet). Work in your input directory and host in your output directory to minimize bandwidth costs with zero impact on development.
 
 ## Contributing
-This repo is active! All PRs will be reviewed ASAP.
+This repo is active! All PRs will be reviewed ASAP. All the code is in `FileMelt.py` (this project is 100% Python). The `source` and `docs` folders are full of input/output test cases. Implement a roadmap feature, minify a new file type, or make any general improvement.
 
 ## Roadmap:
 - [x] Basic HTML minification.
