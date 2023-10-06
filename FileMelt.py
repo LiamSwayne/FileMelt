@@ -1,4 +1,4 @@
-### SETTINGS
+# SETTINGS
 inputFolder = "source"
 outputFolder = "docs"
 deleteFilesMissingInput = True  # Delete files in output folder without corresponding input files
