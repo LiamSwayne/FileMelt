@@ -1,14 +1,19 @@
-# FileMelt
-An everything minifier for websites.
-
-Write clean code while minimizing bandwidth costs.
+# `FileMelt 📁🔥`
+**An everything minifier for websites.**
 
 | Pros | Cons |
 | ------------- | ------------- |
-| Saves significant bandwidth | Increases git repo size quickly |
-| Makes your site load faster | JS minifier is imperfect (but can be disabled) |
+| Write clean code without paying for extra bandwidth | Output folder increases git repo size quickly (but can be added to .gitignore) |
+| Minifies HTML, CSS, JS, SVG | JS minifier is imperfect (but can be disabled) |
+| Decreases load speeds | |
 
-Roadmap:
+## How it works
+The only file you need is [FileMelt.py](https://github.com/LiamSwayne/FileMelt/blob/main/FileMelt.py). Add it to your repository, and assign the input and output directories at the top of the file (and optionally modify the settings also in the file). Each time you run `FileMelt.py`, it will generate a minfied output directory of all files in the input directory, including files that FileMelt cannot minify (yet). Work in your input directory and host in your output directory to minimize bandwidth costs with zero impact on development.
+
+## Contributing
+This repo is active! All PRs will be reviewed ASAP.
+
+## Roadmap:
 - [x] Basic HTML minification.
 - [x] CSS minification.
 - [x] Remove html comments.
@@ -29,7 +34,6 @@ Roadmap:
 - [x] Preserve module attribute in script tags.
 - [x] Option to print individual file stats.
 - [ ] Avoid deleting copyright or license comments.
-- [ ] 
 - [ ] Replace dependencies with built-in functions.
     - [ ] htmlmin
     - [ ] jsmin
