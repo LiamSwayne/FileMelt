@@ -1,5 +1,5 @@
 # `FileMelt 📁🔥`
-**An everything minifier for websites.**
+**An everything minifier for websites implemented in Python.**
 
 | Pros | Cons |
 | ------------- | ------------- |
