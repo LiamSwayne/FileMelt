@@ -1,14 +1,3 @@
-# Internal imports
-import os
-import shutil
-import re
-import xml.etree.ElementTree
-
-# External dependencies
-from htmlmin import minify
-from jsmin import jsmin
-from csscompressor import compress
-
 ### SETTINGS
 inputFolder = "source"
 outputFolder = "docs"
@@ -18,6 +7,28 @@ removeHtmlComments = True       # Remove HTML comments
 removeSvgComments = True        # Remove svg comments
 minifyJsFiles = True            # Minify JS files (imperfect in some cases)
 removeConsoleLog = True         # Remove JavaScript console log statements.
+
+# Built-in imports
+import os
+import shutil
+import re
+import xml.etree.ElementTree
+import importlib
+import pip
+
+# Install external dependencies
+def installPackage(packageName):
+    try:
+        importlib.import_module(packageName)
+    except ImportError:
+        importlib.invalidate_caches()
+        pip.main(['install', packageName])
+installPackage('htmlmin')
+from htmlmin import minify
+installPackage('jsmin')
+from jsmin import jsmin
+installPackage('csscompressor')
+from csscompressor import compress
 
 ### Methods
 
